@@ -26,11 +26,21 @@ export class BoardsService {
     }
 
     getBoardById(id: string) : Board | undefined {
-        return this.boards.find((board) => board.id === id);
+        const found = this.boards.find((board) => board.id === id);
+        
+        if(!found) {
+            throw new NotFoundException(`${id}번 게시물을 찾을 수 없습니다.`);
+        }
+        return found;
     }
 
     deleteBoardById(id: string) : void {
-        this.boards = this.boards.filter((board) => board.id !== id);
+        const found = this.getBoardById(id);
+        
+        if(!found) {
+            throw new NotFoundException(`${id}번 게시물을 찾을 수 없습니다.`);
+        }
+        this.boards = this.boards.filter((board) => board.id !== found.id);
     }
 
     updateBoardStatus(id: string, status: BoardStatus): Board | undefined{

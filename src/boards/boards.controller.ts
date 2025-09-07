@@ -1,6 +1,7 @@
 // 컨트롤러 생성 : $nest g controller boards --no-spec
 // --no-spec : 테스트 코드 생성 X
-import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, UsePipes, ValidationPipe } from '@nestjs/common';
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 import type { Board, BoardStatus } from './boards.model';
 import { BoardsService } from './boards.service';
 import { CreateBoardDTO } from './dto/create-board.dto';
@@ -15,6 +16,7 @@ export class BoardsController {
     }
 
     @Post()
+    @UsePipes(ValidationPipe) // 핸들러 레벨의 pipe
     createBoards(
         @Body() createBoardDTO: CreateBoardDTO
     ): Board {
@@ -31,10 +33,10 @@ export class BoardsController {
         this.boardsService.deleteBoardById(id);
     }
 
-    @Patch('/:id')
+    @Patch('/:id/status')
     updateBoardStatus(
         @Param('id') id: string,
-        @Body('status') status: BoardStatus,
+        @Body('status', BoardStatusValidationPipe) status: BoardStatus, // 파라미터 레벨 pipe
     ) {
         return this.boardsService.updateBoardStatus(id, status);
     }
