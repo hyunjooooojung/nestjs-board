@@ -13,7 +13,7 @@ export class AuthController {
     } // ValidationPipe : 요청이 컨트롤러에 있는 핸들러로 들어왔을 때 DTO의 유효성 체크
 
     @Post('/signin')
-    signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto) {
+    signIn(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<{accessToken: string}> {
         return this.authService.signIn(authCredentialsDto);
     }
 }
