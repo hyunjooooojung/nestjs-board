@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { AuthCredentialsDto } from './dto/auth-credential.dto';
 import { User } from './user.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from './get-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -18,9 +19,16 @@ export class AuthController {
         return this.authService.signIn(authCredentialsDto);
     }
 
+    // @Post('/test')
+    // @UseGuards(AuthGuard()) //@nestjs/passport에서 가져온 AuthGuard()
+    // test(@Req() req) {
+    //     console.log(req)
+    // }
+
+    // CustomDecorator 사용
     @Post('/test')
-    @UseGuards(AuthGuard()) //@nestjs/passport에서 가져온 AuthGuard()
-    test(@Req() req) {
-        console.log('req', req)
+    @UseGuards(AuthGuard())
+    test(@GetUser() user: User) {
+        console.log(user)
     }
 }
