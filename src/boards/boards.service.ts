@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Board } from './board.entity';
 import { BoardRepository } from './board.repository';
 import { BoardStatus } from './board-status.enum';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class BoardsService {
@@ -14,13 +15,23 @@ export class BoardsService {
     ) {}
 
     // Create
-    async createBoard(CreateBoardDTO: CreateBoardDTO) : Promise<Board> {
-        return this.BoardRepository.createBoard(CreateBoardDTO);
+    async createBoard(CreateBoardDTO: CreateBoardDTO, user: User) : Promise<Board> {
+        return this.BoardRepository.createBoard(CreateBoardDTO, user);
     }
 
     // GetAll
     async getAllBoards(): Promise <Board[]> {
         return this.BoardRepository.find();
+    }
+
+    // GetAllByUser
+    async getAllBoardsByUser(user: User): Promise <Board[]> {
+        const query = this.BoardRepository.createQueryBuilder('board');
+
+        query.where('board.userId = :userId', { userId: user.id });
+
+        const boards = await query.getMany();
+        return boards;
     }
     
     // GetById: typeOrm에서 제공하는 findOneBy 메서드 사용
@@ -36,8 +47,8 @@ export class BoardsService {
 
     // remove : 아이템 존재 확인 + 지우기(무조건 존재해야함)
     // delete : 아이템이 존재하면 지우고 존재하지 않으면 작업X
-    async deleteBoard(id: number) : Promise<void> {
-        const result = await this.BoardRepository.delete(id);
+    async deleteBoard(id: number, user: User) : Promise<void> {
+        const result = await this.BoardRepository.delete({id, user});
         
         if(result.affected === 0) {
             throw new NotFoundException(`Can't find Board with id ${id}`);

@@ -5,10 +5,12 @@ import { BoardsService } from './boards.service';
 import { BoardRepository } from './board.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Board } from './board.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Board])
+    TypeOrmModule.forFeature([Board]),
+    AuthModule
   ],
   controllers: [BoardsController],
   providers: [BoardsService, BoardRepository], // TypeORM 0.3+부터는 BoardRepository를 Provider로 직접 등록해야함.

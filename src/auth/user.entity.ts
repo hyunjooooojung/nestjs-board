@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Board } from "src/boards/board.entity";
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Unique(['username']) // 데이터베이스 레벨에서 이미 존재하는 username인 경우에 에러 던짐.
@@ -11,4 +12,8 @@ export class User extends BaseEntity {
 
     @Column()
     password: string;
+
+    @OneToMany(type => Board, board => board.user, { eager: true })
+    boards: Board[];
+
 }
