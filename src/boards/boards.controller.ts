@@ -1,6 +1,6 @@
 // 컨트롤러 생성 : $nest g controller boards --no-spec
 // --no-spec : 테스트 코드 생성 X
-import { Controller, Get, Post, Body, Param, Delete, Patch, UsePipes, ValidationPipe, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, UsePipes, ValidationPipe, ParseIntPipe, UseGuards, Logger } from '@nestjs/common';
 import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 import type { BoardStatus } from './board-status.enum';
 import { BoardsService } from './boards.service';
@@ -13,6 +13,7 @@ import { User } from 'src/auth/user.entity';
 @Controller('boards')
 @UseGuards(AuthGuard()) // 토큰 확인 후 접근 권한 부여해줌.
 export class BoardsController {
+    private logger = new Logger('BoardsController');
     constructor(private boardsService: BoardsService) {}
 
     @Post()
@@ -21,11 +22,14 @@ export class BoardsController {
         @Body() createBoardDTO: CreateBoardDTO,
         @GetUser() user: User
     ): Promise<Board> {
+        this.logger.verbose(`User ${user.username} created a new boards.
+            Payload: ${JSON.stringify(createBoardDTO)}`);
         return this.boardsService.createBoard(createBoardDTO, user);
     }
 
     @Get()
     getAllBoards(): Promise<Board[]> {
+        this.logger.verbose(`모든 게시물 조회`);
         return this.boardsService.getAllBoards();
     }
 
